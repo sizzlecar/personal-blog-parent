@@ -16,6 +16,14 @@ module.exports = app => {
     creatorId: { type: INTEGER, allowNull: false, field: 'creator_id', comment: '创建人id' },
     updateTime: { type: DATE, allowNull: false, field: 'update_time', comment: '修改时间' },
     updaterId: { type: INTEGER, allowNull: false, field: 'updater_id', comment: '修改人id' },
+  }, {
+    timestamps: false,
+    underscored: true,
+    paranoid: true,
+    freezeTableName: true, // 默认false修改表名为复数，true不修改表名，与数据库表名同步
+    tableName: 'blog_comment',
+    charset: 'utf8',
+    collate: 'utf8_general_ci',
   });
 
 

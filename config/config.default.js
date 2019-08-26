@@ -23,6 +23,8 @@ module.exports = appInfo => {
     database: 'personal_blog',
     host: '127.0.0.1',
     port: 3306,
+    username: 'root',
+    password: 'root',
     // custom protocol; default: 'tcp'
     // postgres only, useful for Heroku
     protocol: null,
