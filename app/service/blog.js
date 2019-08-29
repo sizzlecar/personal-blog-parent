@@ -4,11 +4,11 @@ const Service = require('egg').Service;
 class Blog extends Service {
 
   async selectBlogListByMenuId(menuId) {
-    return this.ctx.model.Blog.selectBlogListByMenuId(menuId);
+    return await this.ctx.model.Blog.selectBlogListByMenuId(menuId);
   }
 
   async selectBlogDetail(menuId, blogId) {
-    return this.ctx.model.Blog.selectBlogDetail(menuId, blogId);
+    return await this.ctx.model.Blog.selectBlogDetail(menuId, blogId);
   }
 
 
