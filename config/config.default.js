@@ -86,9 +86,21 @@ module.exports = appInfo => {
     // isolationLevel: Transaction.ISOLATION_LEVELS.REPEATABLE_READ
   };
 
+
+  config.security = {
+    csrf: {
+      enable: false,
+    },
+  };
+
   // add your user config here
   const userConfig = {
     // myAppName: 'egg',
+    baseResult: {
+      code: 'E0001',
+      message: '未知错误',
+      data: {},
+    },
   };
 
   return {
@@ -96,3 +108,5 @@ module.exports = appInfo => {
     ...userConfig,
   };
 };
+// eslint-disable-next-line eggache/no-override-exports
+

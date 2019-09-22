@@ -2,7 +2,7 @@
 
 const Controller = require('egg').Controller;
 
-class Blog extends Controller {
+class BlogController extends Controller {
   async getBlogList() {
     const { ctx } = this;
     const menuId = ctx.params.menuId;
@@ -17,4 +17,4 @@ class Blog extends Controller {
   }
 }
 
-module.exports = Blog;
+module.exports = BlogController;
