@@ -10,6 +10,7 @@ class BlogUser extends Service {
     const user = await this.ctx.model.BlogUser.selectUserDetail(account);
     this.ctx.logger.info('this.ctx：%j', this.ctx);
     const result = this.ctx.app.config.baseResult;
+    result.data = {};
     if (user === null) {
       // 用户不存在
       this.ctx.logger.info('账号为：' + account + '的用户不存在！');
