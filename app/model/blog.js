@@ -7,6 +7,7 @@ module.exports = app => {
     id: { type: INTEGER, primaryKey: true, autoIncrement: true },
     menuId: { type: INTEGER, allowNull: false, field: 'menu_id', comment: '菜单id' },
     blogTitle: { type: STRING, allowNull: false, field: 'blog_title', comment: '标题' },
+    blogDesc: { type: STRING, allowNull: false, field: 'blog_desc', comment: '简介' },
     blogContent: { type: TEXT, allowNull: false, field: 'blog_content', comment: '内容' },
     blogFile: { type: TEXT, allowNull: true, field: 'blog_file', comment: '博客附件' },
     active: { type: INTEGER, allowNull: false, field: 'active', comment: '是否有效，1 有效，0 无效' },
@@ -30,7 +31,7 @@ module.exports = app => {
 
   Blog.selectBlogListByMenuId = async function(menuId) {
     return this.findAll({
-      attributes: [ 'id', 'blogTitle', 'blogContent' ],
+      attributes: [ 'id', 'blogTitle', 'blogDesc' ],
       where: {
         menu_id: menuId,
       },
@@ -52,7 +53,7 @@ module.exports = app => {
 
   Blog.selectBlogDetail = async function(menuId, blogId) {
     const res = await this.findOne({
-      attributes: [ 'id', 'blogTitle', 'blogContent' ],
+      attributes: [ 'id', 'blogTitle', 'blogDesc', 'blogContent' ],
       where: {
         menu_id: menuId,
         id: blogId,
@@ -61,12 +62,14 @@ module.exports = app => {
         // association: Blog.hasMany(BlogComment, {foreignKey: "blogId",targetKey: "id"}),
         model: app.model.BlogComment,
         as: 'blogComments',
+        required: false,
         attributes: [ 'id', 'blogId', 'blogComment' ],
         where: {
           active: 1,
         },
       }],
     });
+    app.logger.info('查寻到数据：%j', res);
     // 转化为普通对象
     const normalModel = {};
     if (res != null) {
@@ -75,6 +78,9 @@ module.exports = app => {
     return normalModel;
   };
 
+  Blog.addBlog = async function(blog) {
+    return this.create(blog);
+  };
 
   return Blog;
 };
