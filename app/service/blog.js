@@ -47,8 +47,13 @@ class Blog extends Service {
     model.createTime = new Date();
     model.updaterId = 1;
     model.updateTime = new Date();
-
-    return await this.ctx.model.Blog.addBlog(model);
+    const res = await this.ctx.model.Blog.addBlog(model);
+    this.ctx.logger.info('插入结果返回值为：%j', res);
+    const result = this.ctx.app.config.baseResult;
+    result.message = null;
+    result.data = {};
+    result.code = '0';
+    return result;
   }
 
 
