@@ -69,7 +69,6 @@ module.exports = app => {
         },
       }],
     });
-    app.logger.info('查寻到数据：%j', res);
     // 转化为普通对象
     const normalModel = {};
     if (res != null) {

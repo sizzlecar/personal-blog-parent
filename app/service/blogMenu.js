@@ -31,6 +31,27 @@ class BlogMenu extends Service {
 
   }
 
+  async menuManageSelectAllMenu() {
+    const allMenu = await this.selectAllMenu();
+    return this.transData(allMenu);
+  }
+
+  transData(allMenu) {
+
+    const result = [];
+    for (const menu of allMenu) {
+      const res = {};
+      res.key = menu.id;
+      res.title = menu.name;
+      res.level = menu.level;
+      if (menu.child) {
+        res.children = this.transData(menu.child);
+      }
+      result.push(res);
+    }
+    return result;
+  }
+
   findChild(root, allMenu) {
     // 找出所有子节点
     const child = [];
