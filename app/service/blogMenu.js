@@ -44,6 +44,7 @@ class BlogMenu extends Service {
       res.key = menu.id;
       res.title = menu.name;
       res.level = menu.level;
+      res.scopedSlots = { title: 'custom' };
       if (menu.child) {
         res.children = this.transData(menu.child);
       }
