@@ -35,5 +35,13 @@ module.exports = app => {
     return await this.update(model, options);
   };
 
+  BlogMenu.deleteMenu = async function(options) {
+    return await this.destroy(options);
+  };
+
+  BlogMenu.batchInsert = async function(models, options) {
+    return await this.bulkCreate(models, options);
+  };
+
   return BlogMenu;
 };

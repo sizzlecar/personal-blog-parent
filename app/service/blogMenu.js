@@ -39,21 +39,51 @@ class BlogMenu extends Service {
     return this.transData(allMenu);
   }
   /**
-     *
+     * 1.删除原有菜单数据
+     * 2.插入新的菜单数据
      */
   async batchUpdateMenu(treeMenu) {
-    sequelize.transaction(transaction => {
-      let res = null;
-      for (const menu of treeMenu) {
-        res = this.ctx.model.BlogMenu.updateMenu(menu, { where: menu.key });
-      }
+    const insertData = this.transInsertData(treeMenu);
+    const result = this.ctx.app.config.baseResult;
+    result.data = {};
+    this.ctx.logger.info('插入数据：%j', insertData);
+    sequelize.transaction(t => {
+      // 删除原来的数据
+      return this.ctx.model.BlogMenu.deleteMenu({ transaction: t })
+        .then(num => {
+          this.ctx.logger.info('删除数据行数：%j', num);
+          this.ctx.model.BlogMenu.batchInsert(insertData, { transaction: t });
+        });
+
     }).then(() => {
       // Committed
+      this.ctx.logger.info('插入数据成功，事务已提交：%j');
+      result.code = '0';
+      result.message = '更新成功';
+      return result;
     }).catch(err => {
       // Rolled back
-      console.error(err);
+      this.ctx.logger.info('插入数据发生错误，事务已经回滚：%j', err);
+      result.code = '0';
+      result.message = '更新失败';
+      return result;
     });
 
+  }
+
+  transInsertData(treeMenu) {
+    const result = [];
+    for (const menu of treeMenu) {
+      const model = {};
+      model.id = menu.key;
+      model.name = menu.title;
+      model.level = menu.level;
+      if (menu.child) {
+        model.children = this.transData(menu.child);
+      }
+      result.push(model);
+    }
+    return result;
   }
 
   transData(allMenu) {
