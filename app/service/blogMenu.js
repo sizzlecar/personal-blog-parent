@@ -1,8 +1,11 @@
 'use strict';
 
 const Service = require('egg').Service;
-
+const sequelize = require('egg').Sequelize;
 class BlogMenu extends Service {
+  /**
+     * 首页获取树形菜单
+     */
   async selectAllMenu() {
     return this.ctx.model.BlogMenu.selectAllMenu()
       .then(menus => {
@@ -14,9 +17,7 @@ class BlogMenu extends Service {
         const allMenus = [];
         // 转化为普通对象
         for (const menu of menus) {
-          const normalModel = {};
-          Object.assign(normalModel, menu.dataValues);
-          allMenus.push(normalModel);
+          allMenus.push(menu.get());
         }
         // 找出所有的一级节点
         for (const menu of allMenus) {
@@ -30,10 +31,29 @@ class BlogMenu extends Service {
       });
 
   }
-
+  /**
+     * 后台管理获取菜单树
+     */
   async menuManageSelectAllMenu() {
     const allMenu = await this.selectAllMenu();
     return this.transData(allMenu);
+  }
+  /**
+     *
+     */
+  async batchUpdateMenu(treeMenu) {
+    sequelize.transaction(transaction => {
+      let res = null;
+      for (const menu of treeMenu) {
+        res = this.ctx.model.BlogMenu.updateMenu(menu, { where: menu.key });
+      }
+    }).then(() => {
+      // Committed
+    }).catch(err => {
+      // Rolled back
+      console.error(err);
+    });
+
   }
 
   transData(allMenu) {

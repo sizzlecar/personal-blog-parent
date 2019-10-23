@@ -30,5 +30,10 @@ module.exports = app => {
   BlogMenu.selectAllMenu = async function() {
     return await this.findAll();
   };
+
+  BlogMenu.updateMenu = async function(model, options) {
+    return await this.update(model, options);
+  };
+
   return BlogMenu;
 };
