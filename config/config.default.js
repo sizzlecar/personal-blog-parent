@@ -24,7 +24,7 @@ module.exports = appInfo => {
     host: '127.0.0.1',
     port: 3306,
     username: 'root',
-    password: '12345678',
+    password: 'ting876587134',
     // custom protocol; default: 'tcp'
     // postgres only, useful for Heroku
     protocol: null,
@@ -97,8 +97,8 @@ module.exports = appInfo => {
   const userConfig = {
     // myAppName: 'egg',
     baseResult: {
-      code: 'E0001',
-      message: '未知错误',
+      code: '0',
+      message: '操作成功',
       data: {},
     },
   };

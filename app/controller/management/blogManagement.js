@@ -17,7 +17,7 @@ class BlogManagementController extends Controller {
 
   /**
    * 查看菜单树
-   * @returns {Promise<void>}
+   * @return {Promise<void>}
    */
   async selectTreeMenu() {
     const { ctx } = this;
@@ -26,13 +26,18 @@ class BlogManagementController extends Controller {
 
   /**
    * 修改菜单
-   * @returns {Promise<void>}
+   * @return {Promise<void>}
    */
   async updateTreeMenu() {
     const { ctx } = this;
     const treeMenu = ctx.request.body;
     ctx.logger.info('修改菜单参数为：%j', treeMenu);
-    ctx.body = await ctx.service.blogMenu.batchUpdateMenu(treeMenu);
+    const res = await ctx.service.blogMenu.batchUpdateMenu(treeMenu);
+    ctx.logger.info('batchUpdateMenu结果：%j', res);
+    const result = {};
+    result.code = 'E0002';
+    result.message = '更新失败';
+    ctx.body = result;
   }
 }
 

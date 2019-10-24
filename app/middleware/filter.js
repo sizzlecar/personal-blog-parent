@@ -8,9 +8,7 @@ module.exports = options => {
     const result = ctx.app.config.baseResult;
     result.data = null;
     const header = ctx.request.header;
-    ctx.logger.info(header);
     const tokenStr = header.authorization;
-    ctx.logger.info(tokenStr);
     if (tokenStr) {
       const token = tokenStr.replace('Bearer ', '');
       jwt.verify(token, privateKey, function(err, decoded) {
