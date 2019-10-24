@@ -105,6 +105,16 @@ class BlogMenu extends Service {
                 name: updateModel.name
             }
         });
+        //查询parentId 是否存在
+        if(updateModel.parentId !== 0){
+            const parentMenuModel = await this.ctx.model.BlogMenu.selectMenuDetail(updateModel.parentId);
+            if (!parentMenuModel) {
+                result.code = 'E0005';
+                result.message = '父级菜单不存在';
+                return result;
+            }
+        }
+
 
         if (count !== 0) {
             result.code = 'E0004';
@@ -112,7 +122,7 @@ class BlogMenu extends Service {
             return result;
         }
 
-        this.app.model.transaction(t => {
+        await this.app.model.transaction(t => {
             return this.ctx.model.BlogMenu.updateMenu(updateModel, {
                 transaction: t,
                 fields: ['name', 'parentId', 'level'],
@@ -152,12 +162,12 @@ class BlogMenu extends Service {
             return result;
         }
         menuModel.active = 1;
-        menuModel.createdTime = new Date();
-        menuModel.updatedTime = new Date();
-        menuModel.creatorId = new Date();
-        menuModel.updaterId = new Date();
+        menuModel.createTime = new Date();
+        menuModel.updateTime = new Date();
+        menuModel.creatorId = 1;
+        menuModel.updaterId = 1;
 
-        this.app.model.transaction(t => {
+        await this.app.model.transaction(t => {
             return this.ctx.model.BlogMenu.addMenu(menuModel, {
                 transaction: t
             });
@@ -257,8 +267,13 @@ class BlogMenu extends Service {
             res.title = menu.name;
             res.level = menu.level;
             res.scopedSlots = {title: 'custom'};
+            res.parentId = 0;
             if (menu.child) {
                 res.children = await this.transData(menu.child);
+                for (const children of res.children){
+                    children.parentId = res.key;
+                }
+
             }
             result.push(res);
         }

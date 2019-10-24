@@ -49,8 +49,17 @@ class BlogManagementController extends Controller {
         const {ctx} = this;
         const treeMenu = ctx.request.body;
         ctx.logger.info('修改菜单 名称，位置：%j', treeMenu);
-        const res = await ctx.service.blogMenu.updateMenu(treeMenu);
-        ctx.logger.info('batchUpdateMenu结果：%j', res);
+        const res = {};
+        res.code = "0";
+        res.data = null;
+        res.msg = "修改成功";
+        try{
+            await ctx.service.blogMenu.updateMenu(treeMenu);
+        }catch (e) {
+            ctx.logger.error(e);
+            res.code = "E0009";
+            res.msg = "修改发生错误"
+        }
         ctx.body = res;
     }
 
@@ -62,8 +71,17 @@ class BlogManagementController extends Controller {
         const {ctx} = this;
         const treeMenu = ctx.request.body;
         ctx.logger.info('添加菜单：%j', treeMenu);
-        const res = await ctx.service.blogMenu.addMenu(treeMenu);
-        ctx.logger.info('addMenu结果：%j', res);
+        const res = {};
+        res.code = "0";
+        res.data = null;
+        res.msg = "添加成功";
+        try{
+            await ctx.service.blogMenu.addMenu(treeMenu);
+        }catch (e) {
+            ctx.logger.error(e);
+            res.code = "E00012";
+            res.msg = "添加失败"
+        }
         ctx.body = res;
     }
 }
