@@ -186,6 +186,20 @@ class BlogMenu extends Service {
 
     }
 
+  /**
+   * 删除菜单
+   * @param menu
+   * @returns {Promise<void>}
+   */
+    async deleteMenu(menu){
+      const result = {};
+      const menuModel = await this.ctx.model.BlogMenu.selectMenuDetail(menu.id);
+      if (!menuModel) {
+        throw new Error('菜单不存在');
+      }
+      // 判断当前菜单及其子菜单是否有博客，如果有则不允许删除当前菜单
+    }
+
 
     transInsertData(treeMenu, parentMenu) {
         const result = [];
