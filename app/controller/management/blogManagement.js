@@ -80,7 +80,7 @@ class BlogManagementController extends Controller {
         }catch (e) {
             ctx.logger.error(e);
             res.code = "E00012";
-            res.msg = "添加失败"
+            res.msg = e.toString();
         }
         ctx.body = res;
     }

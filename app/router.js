@@ -5,7 +5,6 @@
  */
 module.exports = app => {
   const { router, controller } = app;
-  app.logger.info('controller: %j', controller);
   const filter = app.middleware.filter();
   router.get('/', controller.home.index);
   router.get('/blog/blog-menu/list', controller.blogMenu.getAllMenu);

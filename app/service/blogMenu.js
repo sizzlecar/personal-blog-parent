@@ -10,35 +10,39 @@ class BlogMenu extends Service {
     async selectAllMenu() {
         return this.ctx.model.BlogMenu.selectAllMenu()
             .then(menus => {
-                if (menus == null) {
-                    return [];
-                }
-                const rootMenu = [];
-                // 将查询到的数据转化为一颗树
-                const allMenus = [];
-                // 转化为普通对象
-                for (const menu of menus) {
-                    allMenus.push(menu.get());
-                }
-                // 找出所有的一级节点
-                for (const menu of allMenus) {
-                    if (menu.parentId === 0 && menu.level === 0) {
-                        // 寻找子节点
-                        this.findChild(menu, allMenus);
-                        rootMenu.push(menu);
-                    }
-                }
-                return rootMenu;
+              return this.transData(this.toTree(menus));
             });
 
+    }
+
+
+    toTree(menus){
+      if (menus == null) {
+        return [];
+      }
+      const rootMenu = [];
+      // 将查询到的数据转化为一颗树
+      const allMenus = [];
+      // 转化为普通对象
+      for (const menu of menus) {
+        allMenus.push(menu.get());
+      }
+      // 找出所有的一级节点
+      for (const menu of allMenus) {
+        if (menu.parentId === 0 && menu.level === 0) {
+          // 寻找子节点
+          this.findChild(menu, allMenus);
+          rootMenu.push(menu);
+        }
+      }
+      return rootMenu;
     }
 
     /**
      * 后台管理获取菜单树
      */
     async menuManageSelectAllMenu() {
-        const allMenu = await this.selectAllMenu();
-        return this.transData(allMenu);
+        return await this.selectAllMenu();
     }
 
     /**
@@ -157,9 +161,7 @@ class BlogMenu extends Service {
             }
         });
         if (count !== 0) {
-            result.code = 'E0004';
-            result.message = '菜单名称已存在';
-            return result;
+            throw new Error("菜单名称已存在");
         }
         menuModel.active = 1;
         menuModel.createTime = new Date();
@@ -357,7 +359,7 @@ class BlogMenu extends Service {
         return result;
     }
 
-    async findChild(root, allMenu) {
+    findChild(root, allMenu) {
         // 找出所有子节点
         const child = [];
         const parentId = root.id;
