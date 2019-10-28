@@ -84,6 +84,24 @@ class BlogManagementController extends Controller {
         }
         ctx.body = res;
     }
+
+    async deleteMenu(){
+        const {ctx} = this;
+        const treeMenu = ctx.request.body;
+        ctx.logger.info('删除菜单：%j', treeMenu);
+        const res = {};
+        res.code = "0";
+        res.data = null;
+        res.msg = "删除成功";
+        try{
+            await ctx.service.blogMenu.deleteMenu(treeMenu);
+        }catch (e) {
+            ctx.logger.error(e);
+            res.code = "E00012";
+            res.msg = e.toString();
+        }
+        ctx.body = res;
+    }
 }
 
 module.exports = BlogManagementController;

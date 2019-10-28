@@ -192,13 +192,76 @@ class BlogMenu extends Service {
    * @returns {Promise<void>}
    */
     async deleteMenu(menu){
+      const {in: opIn} = this.app.Sequelize.Op;
       const result = {};
       const menuModel = await this.ctx.model.BlogMenu.selectMenuDetail(menu.id);
       if (!menuModel) {
         throw new Error('菜单不存在');
       }
       // 判断当前菜单及其子菜单是否有博客，如果有则不允许删除当前菜单
-    }
+
+      //1.先查询出所有的菜单树
+      const treeMenus = await this.selectAllMenu();
+      const loop = (data, id, callback) => {
+          data.forEach((item, index, arr) => {
+              if (item.id === id) {
+                  return callback(item, index, arr);
+              }
+              if (item.child) {
+                  return loop(item.child, id, callback);
+              }
+          });
+      };
+
+
+      //找出当前菜单id,及其所有子菜单的id
+      const menuIds = [];
+      loop(treeMenus, menuModel.id, item => {
+            menuIds.push(item.id);
+            if(item.child){
+              const ids = this.findChildMenuId(item.child);
+              for (const id of ids){
+                menuIds.push(id);
+              }
+            }
+      });
+
+      //查询这些菜单下是否有博客
+      const blogCount = await this.ctx.model.Blog.count({where:{menuId:{ [opIn]: menuIds }}});
+      if(blogCount > 0){
+          throw new Error("当前菜单及其子菜单下含有博客，请删除全部博客之后，再删除该菜单！");
+      }
+
+      //删除
+      await this.app.model.transaction(t => {
+          return this.ctx.model.BlogMenu.deleteMenu({transaction: t, where: {id: { [opIn]: menuIds }}})
+      }).then(() => {
+          // Committed
+          this.ctx.logger.info('插入数据成功，事务已提交：%j');
+      }).catch(err => {
+          // Rolled back
+          throw new Error("删除菜单失败");
+      });
+
+  }
+
+
+  findChildMenuId(arr){
+      const menuIds = [];
+      for (const menu of arr){
+        menuIds.push(menu.id);
+        if(menu.child){
+          const childMenuIds = this.findChildMenuId(menu.child);
+          for (const childMenuId of childMenuIds){
+            menuIds.push(childMenuId);
+          }
+        }
+      }
+      return menuIds;
+  }
+
+
+
 
 
     transInsertData(treeMenu, parentMenu) {

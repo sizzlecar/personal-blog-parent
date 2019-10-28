@@ -17,4 +17,5 @@ module.exports = app => {
   router.post('/blog/management/blog-menu/batch-update', filter, controller.management.blogManagement.updateTreeMenu);
   router.post('/blog/management/blog-menu/update', filter, controller.management.blogManagement.updateMenu);
   router.post('/blog/management/blog-menu/add', filter, controller.management.blogManagement.addMenu);
+  router.post('/blog/management/blog-menu/delete', filter, controller.management.blogManagement.deleteMenu);
 };
