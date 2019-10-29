@@ -23,7 +23,15 @@ const Service = require('egg').Service;
 class Blog extends Service {
 
   async selectBlogListByMenuId(menuId) {
-    return await this.ctx.model.Blog.selectBlogListByMenuId(menuId);
+    const blogList = await this.ctx.model.Blog.selectBlogListByMenuId(menuId);
+    if(blogList){
+      return blogList.map(blog => {
+        const item = blog.get();
+        item.title = item.blogTitle;
+        return item;
+      })
+    }
+    return [];
   }
 
   async selectBlogDetail(menuId, blogId) {

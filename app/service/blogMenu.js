@@ -347,9 +347,6 @@ class BlogMenu extends Service {
             res.scopedSlots = {
                 title: 'operationSlot',
             };
-            res.slots = {
-                icon: 'iconSlot'
-            };
             res.parentId = 0;
             if (menu.child) {
                 res.children = await this.transData(menu.child);

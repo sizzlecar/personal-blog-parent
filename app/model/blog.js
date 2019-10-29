@@ -35,20 +35,7 @@ module.exports = app => {
       where: {
         menu_id: menuId,
       },
-    })
-      .then(data => {
-        if (data == null) {
-          return [];
-        }
-        const blogList = [];
-        // 转化为普通对象
-        for (const blog of data) {
-          const normalModel = {};
-          Object.assign(normalModel, blog.dataValues);
-          blogList.push(normalModel);
-        }
-        return blogList;
-      });
+    });
   };
 
   Blog.selectBlogDetail = async function(menuId, blogId) {
