@@ -195,7 +195,6 @@ class BlogMenu extends Service {
    */
     async deleteMenu(menu){
       const {in: opIn} = this.app.Sequelize.Op;
-      const result = {};
       const menuModel = await this.ctx.model.BlogMenu.selectMenuDetail(menu.id);
       if (!menuModel) {
         throw new Error('菜单不存在');
@@ -242,7 +241,7 @@ class BlogMenu extends Service {
           this.ctx.logger.info('插入数据成功，事务已提交：%j');
       }).catch(err => {
           // Rolled back
-          throw new Error("删除菜单失败");
+          throw new Error(err);
       });
 
   }
@@ -345,7 +344,12 @@ class BlogMenu extends Service {
             res.key = menu.id;
             res.title = menu.name;
             res.level = menu.level;
-            res.scopedSlots = {title: 'custom'};
+            res.scopedSlots = {
+                title: 'operationSlot',
+            };
+            res.slots = {
+                icon: 'iconSlot'
+            };
             res.parentId = 0;
             if (menu.child) {
                 res.children = await this.transData(menu.child);
