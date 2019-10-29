@@ -206,11 +206,11 @@ class BlogMenu extends Service {
       const treeMenus = await this.selectAllMenu();
       const loop = (data, id, callback) => {
           data.forEach((item, index, arr) => {
-              if (item.id === id) {
+              if (item.key === id) {
                   return callback(item, index, arr);
               }
-              if (item.child) {
-                  return loop(item.child, id, callback);
+              if (item.children) {
+                  return loop(item.children, id, callback);
               }
           });
       };
@@ -219,9 +219,9 @@ class BlogMenu extends Service {
       //找出当前菜单id,及其所有子菜单的id
       const menuIds = [];
       loop(treeMenus, menuModel.id, item => {
-            menuIds.push(item.id);
-            if(item.child){
-              const ids = this.findChildMenuId(item.child);
+            menuIds.push(item.key);
+            if(item.children){
+              const ids = this.findChildMenuId(item.children);
               for (const id of ids){
                 menuIds.push(id);
               }
@@ -251,9 +251,9 @@ class BlogMenu extends Service {
   findChildMenuId(arr){
       const menuIds = [];
       for (const menu of arr){
-        menuIds.push(menu.id);
-        if(menu.child){
-          const childMenuIds = this.findChildMenuId(menu.child);
+        menuIds.push(menu.key);
+        if(menu.children){
+          const childMenuIds = this.findChildMenuId(menu.children);
           for (const childMenuId of childMenuIds){
             menuIds.push(childMenuId);
           }
