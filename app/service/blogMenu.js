@@ -8,7 +8,7 @@ class BlogMenu extends Service {
      * 首页获取树形菜单
      */
     async selectAllMenu() {
-        return this.ctx.model.BlogMenu.selectAllMenu()
+        return this.ctx.model.BlogMenu.findAll()
             .then(menus => {
               return this.transData(this.toTree(menus));
             });
@@ -55,17 +55,13 @@ class BlogMenu extends Service {
         const insertData = this.transLineData(treeData);
         const result = this.ctx.app.config.baseResult;
         result.data = {};
-        this.ctx.logger.info('插入数据：%j', insertData);
         this.app.model.transaction(t => {
             // 删除原来的数据
             return this.ctx.model.BlogMenu.deleteMenu({transaction: t, where: {id: {[Op.ne]: 0}}})
                 .then(num => {
-                    this.ctx.logger.info('删除数据行数：%j', num);
                     return this.ctx.model.BlogMenu.batchInsert(insertData, {transaction: t});
                 }).then(insertModels => {
-                    this.ctx.logger.info('插入回调数据：%j', insertModels);
                     const updateData = this.updateParentId(insertModels, insertData);
-                    this.ctx.logger.info('批量修改数据：%j', updateData);
                     return this.ctx.model.BlogMenu.batchInsert(updateData, {
                         transaction: t,
                         updateOnDuplicate: ['parentId'],
@@ -73,16 +69,10 @@ class BlogMenu extends Service {
                 });
         }).then(() => {
             // Committed
-            this.ctx.logger.info('插入数据成功，事务已提交：%j');
-            result.code = '0';
-            result.message = '更新成功';
-            return result;
         }).catch(err => {
             // Rolled back
             this.ctx.logger.error(err);
-            result.code = 'E0002';
-            result.message = '更新失败';
-            return result;
+            throw new Error("批量修改菜单失败！");
         });
 
     }
@@ -98,9 +88,7 @@ class BlogMenu extends Service {
         const result = {};
         const menuModel = await this.ctx.model.BlogMenu.selectMenuDetail(updateModel.id);
         if (!menuModel) {
-            result.code = 'E0003';
-            result.message = '菜单不存在';
-            return result;
+            throw new Error("菜单不存在");
         }
         //校验名称是否重复
         const count = await this.ctx.model.BlogMenu.selectCount({
@@ -113,17 +101,13 @@ class BlogMenu extends Service {
         if(updateModel.parentId !== 0){
             const parentMenuModel = await this.ctx.model.BlogMenu.selectMenuDetail(updateModel.parentId);
             if (!parentMenuModel) {
-                result.code = 'E0005';
-                result.message = '父级菜单不存在';
-                return result;
+              throw new Error("父菜单不存在");
             }
         }
 
 
         if (count !== 0) {
-            result.code = 'E0004';
-            result.message = '菜单名称已存在';
-            return result;
+            throw new Error("菜单名称已存在");
         }
 
         await this.app.model.transaction(t => {
@@ -134,14 +118,10 @@ class BlogMenu extends Service {
             });
         }).then(() => {
             // Committed
-            this.ctx.logger.info('插入数据成功，事务已提交：%j');
-            result.code = '0';
-            result.message = '更新成功';
         }).catch(err => {
             // Rolled back
             this.ctx.logger.error(err);
-            result.code = 'E0005';
-            result.message = '更新失败';
+            throw new Error("修改菜单失败");
         });
 
     }
@@ -175,14 +155,10 @@ class BlogMenu extends Service {
             });
         }).then(() => {
             // Committed
-            this.ctx.logger.info('插入数据成功，事务已提交：%j');
-            result.code = '0';
-            result.message = '更新成功';
         }).catch(err => {
             // Rolled back
             this.ctx.logger.error(err);
-            result.code = 'E0005';
-            result.message = '更新失败';
+            throw new Error("添加菜单失败");
         });
 
 
@@ -336,7 +312,7 @@ class BlogMenu extends Service {
     }
 
 
-    async transData(allMenu) {
+     transData(allMenu) {
 
         const result = [];
         for (const menu of allMenu) {
@@ -349,7 +325,7 @@ class BlogMenu extends Service {
             };
             res.parentId = 0;
             if (menu.child) {
-                res.children = await this.transData(menu.child);
+                res.children = this.transData(menu.child);
                 for (const children of res.children){
                     children.parentId = res.key;
                 }
