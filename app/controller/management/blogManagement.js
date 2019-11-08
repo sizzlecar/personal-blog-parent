@@ -16,13 +16,13 @@ class BlogManagementController extends Controller {
         res.data = null;
         res.msg = "添加成功";
         try{
-            ctx.body = await ctx.service.blog.addBlog(blog);
+            await ctx.service.blog.addBlog(blog);
         }catch (e) {
             ctx.logger.error(e);
             res.code = "E0009";
             res.msg = e.toString();
         }
-        return res;
+        ctx.body =  res;
     }
 
     /**
