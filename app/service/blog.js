@@ -6,9 +6,6 @@ const marked = require('marked');
 // `highlight` example uses `highlight.js`
 marked.setOptions({
     renderer: new marked.Renderer(),
-    highlight: function (code) {
-        return require('highlight.js').highlightAuto(code).value;
-    },
     pedantic: false,
     gfm: true,
     breaks: false,
@@ -61,26 +58,33 @@ class Blog extends Service {
         return detail;
     }
 
-    async addBlog(menuId, blog) {
-        const model = {};
-        if (!menuId) {
-            model.menuId = 1;
+    async addBlog(blog) {
+        const menu = await this.ctx.model.BlogMenu.findByPk(blog.menuId);
+        if(!menu){
+            throw new Error("菜单不存在！");
         }
+        const model = {};
         model.blogTitle = blog.title;
         model.blogDesc = blog.desc;
         model.blogContent = blog.content;
+        model.menuId = blog.menuId;
         model.active = 1;
         model.creatorId = 1;
         model.createTime = new Date();
         model.updaterId = 1;
         model.updateTime = new Date();
-        const res = await this.ctx.model.Blog.addBlog(model);
-        this.ctx.logger.info('插入结果返回值为：%j', res);
-        const result = this.ctx.app.config.baseResult;
-        result.message = null;
-        result.data = {};
-        result.code = '0';
-        return result;
+
+        await this.app.model.transaction(t => {
+            return this.ctx.model.Blog.create(model, {
+                transaction: t
+            });
+        }).then(() => {
+            // Committed
+        }).catch(err => {
+            // Rolled back
+            this.ctx.logger.error(err);
+            throw new Error("添加博客失败！");
+        });
     }
 
 
