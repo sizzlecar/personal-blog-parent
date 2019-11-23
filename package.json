@@ -8,12 +8,12 @@
   },
   "dependencies": {
     "egg": "^2.15.1",
+    "egg-scripts": "^2.11.1",
     "egg-sequelize": "^5.2.0",
-    "egg-scripts": "^2.11.0",
-    "mysql2": "^1.6.5",
+    "highlight.js": "^9.15.10",
     "jsonwebtoken": "^8.5.1",
     "marked": "^0.7.0",
-    "highlight.js": "^9.15.10"
+    "mysql2": "^1.6.5"
   },
   "devDependencies": {
     "autod": "^3.0.1",
@@ -28,6 +28,7 @@
     "node": ">=10.0.0"
   },
   "scripts": {
+    "prod-start": "egg-scripts start --daemon --env=prod --port=8899 --title=egg-server-personal-blog-parent",
     "start": "egg-scripts start --daemon --title=egg-server-personal-blog-parent",
     "stop": "egg-scripts stop --title=egg-server-personal-blog-parent",
     "dev": "egg-bin dev --port 7001",
