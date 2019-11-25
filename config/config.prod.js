@@ -13,7 +13,9 @@ module.exports = appInfo => {
     const config = exports = {};
     // use for cookie sign key, should change to your own and keep security
     config.keys = appInfo.name + '_1566487142349_9525';
-
+    config.logger = {
+        dir: '/usr/local/logs/personal-blog-parent'
+    };
     // add your middleware config here
     config.middleware = [];
 
@@ -23,7 +25,7 @@ module.exports = appInfo => {
         host: '127.0.0.1',
         port: 3306,
         username: 'root',
-        password: 'root',
+        password: '12345678',
         // custom protocol; default: 'tcp'
         // postgres only, useful for Heroku
         protocol: null,
