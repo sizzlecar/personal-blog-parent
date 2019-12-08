@@ -101,6 +101,17 @@ class BlogManagementController extends Controller {
         }
         ctx.body = res;
     }
+
+    /**
+     * 后端查看博客列表
+     * @returns {Promise<void>}
+     */
+    async getBlogList() {
+        const {ctx} = this;
+        const blog = ctx.request.body;
+        ctx.logger.info('查询blogList：%j', blog);
+        ctx.body = await ctx.service.blog.selectBlogListByMenuId(blog);
+    }
 }
 
 module.exports = BlogManagementController;

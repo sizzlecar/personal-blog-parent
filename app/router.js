@@ -12,6 +12,7 @@ module.exports = app => {
   router.get('/blog/detail/:menuId/:blogId', controller.blog.getBlogDetail);
   router.post('/blog/user/login', controller.blogUser.login);
   router.post('/blog/management/blog/add', filter, controller.management.blogManagement.addBlog);
+  router.post('/blog/management/blog/list', filter, controller.management.blogManagement.getBlogList);
   router.post('/blog/management/blog-menu/list', filter, controller.management.blogManagement.selectTreeMenu);
   router.post('/blog/management/blog-menu/update', filter, controller.management.blogManagement.updateMenu);
   router.post('/blog/management/blog-menu/add', filter, controller.management.blogManagement.addMenu);

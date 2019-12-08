@@ -20,23 +20,30 @@ const Service = require('egg').Service;
 class Blog extends Service {
 
     async selectBlogListByMenuId(blog) {
+        const Op = this.app.Sequelize.Op;
         const res = {};
         res.total = 0;
         res.list = [];
+        const paras = {};
+        if(blog.menuId){
+            paras.menuId = blog.menuId;
+        }
+        if(blog.active){
+            paras.active = blog.active;
+        }
+        if(blog.blogTitle){
+            paras.blogTitle = {[Op.like]: '%' + blog.blogTitle + '%'};
+        }
         const count = await this.ctx.model.Blog.count({
-            where: {
-                menuId: blog.menuId,
-            }
+            where: paras
         });
         if (count === 0) {
             return res;
         }
         res.total = count;
         const blogList = await this.ctx.model.Blog.findAll({
-            attributes: ['id', 'blogTitle', 'blogDesc'],
-            where: {
-                menuId: blog.menuId,
-            },
+            attributes: ['id', 'blogTitle', 'blogDesc', 'updateTime'],
+            where: paras,
             offset: blog.pageNo,
             limit: blog.pageSize
         });
