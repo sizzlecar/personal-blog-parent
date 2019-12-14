@@ -31,8 +31,18 @@ class Blog extends Service {
     if (blog.active) {
       paras.active = blog.active;
     }
-    if (blog.blogTitle) {
-      paras.blogTitle = { [Op.like]: '%' + blog.blogTitle + '%' };
+    if (blog.searchKey) {
+      paras[Op.or] = [
+        {
+          blogTitle: {
+            [Op.like]: '%' + blog.searchKey + '%'
+          }
+        },
+        {
+          blogDesc: {
+            [Op.like]: '%' + blog.searchKey + '%'
+          }
+        } ];
     }
     const count = await this.ctx.model.Blog.count({
       where: paras
@@ -49,7 +59,7 @@ class Blog extends Service {
           model: this.app.model.BlogMenu,
           as: 'blogMenu',
           required: false,
-          attributes: [ 'id', 'name']
+          attributes: [ 'id', 'name' ]
         } ],
         offset: blog.pageNo,
         limit: blog.pageSize
