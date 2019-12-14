@@ -27,6 +27,7 @@ module.exports = app => {
 
     Blog.associate = function () {
         app.model.Blog.hasMany(app.model.BlogComment, {foreignKey: 'blogId', targetKey: 'id', as: 'blogComments'});
+        app.model.Blog.belongsTo(app.model.BlogMenu, {foreignKey: 'menuId', targetKey: 'id', as: 'blogMenu'});
     };
 
     Blog.selectBlogDetail = async function (menuId, blogId) {
@@ -50,7 +51,7 @@ module.exports = app => {
         // 转化为普通对象
         const normalModel = {};
         if (res != null) {
-            Object.assign(normalModel, res.dataValues);
+            Object.assign(normalModel, res.get());
         }
         return normalModel;
     };
