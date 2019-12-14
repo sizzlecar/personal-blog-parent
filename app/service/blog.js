@@ -1,6 +1,7 @@
 'use strict';
 // Create reference instance
 const marked = require('marked');
+const moment = require('moment');
 
 // Set options
 // `highlight` example uses `highlight.js`
@@ -70,6 +71,7 @@ class Blog extends Service {
       res.list = blogList.map(blog => {
         const item = blog.get();
         item.title = item.blogTitle;
+        item.updateTime = moment(item.updateTime).format("YYYY-MM-DD HH:mm:ss");
         return item;
       });
     }
