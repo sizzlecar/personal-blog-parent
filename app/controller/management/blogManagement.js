@@ -112,6 +112,59 @@ class BlogManagementController extends Controller {
         ctx.logger.info('查询blogList：%j', blog);
         ctx.body = await ctx.service.blog.selectBlogListByMenuId(blog);
     }
+
+    /**
+     * 后端管理查看博客详情
+     * @returns {Promise<void>}
+     */
+    async getBlogDetail() {
+        const {ctx} = this;
+        const menuId = ctx.params.menuId;
+        const blogId = ctx.params.blogId;
+        ctx.body = await ctx.service.blog.selectBlogManagementDetail(menuId, blogId);
+    }
+
+    /**
+     * 后端管理修改博客
+     * @returns {Promise<void>}
+     */
+    async updateBlog() {
+        const {ctx} = this;
+        const blog = ctx.request.body;
+        const res = {};
+        res.code = "0";
+        res.data = null;
+        res.msg = "修改成功";
+        try{
+            await ctx.service.blog.updateBlog(blog);
+        }catch (e) {
+            ctx.logger.error(e);
+            res.code = "E00012";
+            res.msg = e.toString();
+        }
+        ctx.body = res;
+    }
+
+    /**
+     * 后端管理删除博客
+     * @returns {Promise<void>}
+     */
+    async deleteBlog() {
+        const {ctx} = this;
+        const blog = ctx.request.body;
+        const res = {};
+        res.code = "0";
+        res.data = null;
+        res.msg = "删除成功";
+        try{
+            await ctx.service.blog.deleteBlog(blog);
+        }catch (e) {
+            ctx.logger.error(e);
+            res.code = "E00012";
+            res.msg = e.toString();
+        }
+        ctx.body = res;
+    }
 }
 
 module.exports = BlogManagementController;

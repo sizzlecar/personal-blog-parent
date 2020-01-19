@@ -86,6 +86,30 @@ class Blog extends Service {
     return detail;
   }
 
+    /**
+     * 博客管理查询博客详情
+     * @param menuId
+     * @param blogId
+     * @returns {Promise<void>}
+     */
+  async selectBlogManagementDetail(menuId, blogId){
+      const res = await this.ctx.model.Blog.findOne({
+          attributes: ['id', 'blogTitle', 'blogDesc', 'blogContent', 'active'],
+          where: {
+              menu_id: menuId,
+              id: blogId,
+          }
+      });
+      // 转化为普通对象
+      const normalModel = {};
+      if (res != null) {
+          Object.assign(normalModel, res.get());
+      }
+      return normalModel;
+  }
+
+
+
   async addBlog(blog) {
     const menu = await this.ctx.model.BlogMenu.findByPk(blog.menuId);
     if (!menu) {
@@ -106,16 +130,87 @@ class Blog extends Service {
       return this.ctx.model.Blog.create(model, {
         transaction: t
       });
-    })
-      .then(() => {
+    }).then(() => {
         // Committed
-      })
-      .catch(err => {
+    }).catch(err => {
         // Rolled back
         this.ctx.logger.error(err);
         throw new Error('添加博客失败！');
-      });
+    });
   }
+
+    /**
+     * 修改博客
+     * @param blog
+     * @returns {Promise<void>}
+     */
+    async updateBlog(blog) {
+        const menu = await this.ctx.model.BlogMenu.findByPk(blog.menuId);
+        if (!menu) {
+            throw new Error('菜单不存在！');
+        }
+        const existBlog = await this.ctx.model.Blog.findByPk(blog.id);
+        if (!existBlog) {
+            throw new Error('博客不存在！');
+        }
+        const updateModel = {};
+        if(blog.title){
+            updateModel.blogTitle = blog.title;
+        }
+        if(blog.desc){
+            updateModel.blogDesc = blog.desc;
+        }
+        if(blog.content){
+            updateModel.blogContent = blog.content;
+        }
+        updateModel.active = blog.active;
+        updateModel.menuId = blog.menuId;
+        updateModel.updateTime = new Date();
+        updateModel.id = blog.id;
+        await this.app.model.transaction(t => {
+            return this.ctx.model.Blog.update(updateModel, {
+                transaction: t,
+                fields: ['blogTitle', 'blogDesc', 'blogContent', 'menuId', 'active', 'updateTime'],
+                where: {id: updateModel.id}
+            });
+        }).then(() => {
+            // Committed
+        }).catch(err => {
+            // Rolled back
+            this.ctx.logger.error(err);
+            throw new Error('修改博客失败！');
+        });
+
+    }
+
+    /**
+     * 删除博客
+     * @param blog
+     * @returns {Promise<void>}
+     */
+    async deleteBlog(blog) {
+        const menu = await this.ctx.model.BlogMenu.findByPk(blog.menuId);
+        if (!menu) {
+            throw new Error('菜单不存在！');
+        }
+        const existBlog = await this.ctx.model.Blog.findByPk(blog.id);
+        if (!existBlog) {
+            throw new Error('博客不存在！');
+        }
+        blog.updateTime = new Date();
+        await this.app.model.transaction(t => {
+            return this.ctx.model.Blog.destroy({
+                transaction: t, where: {id: blog.id}
+            });
+        }).then(() => {
+            // Committed
+        }).catch(err => {
+            // Rolled back
+            this.ctx.logger.error(err);
+            throw new Error('删除博客失败！');
+        });
+
+    }
 
 
 }
