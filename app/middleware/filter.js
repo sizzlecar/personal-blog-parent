@@ -4,14 +4,17 @@ const jwt = require('jsonwebtoken');
 const privateKey = 'jinwandalaohu';
 module.exports = options => {
   return async function filter(ctx, next) {
-    const result = ctx.app.config.baseResult;
+    const result = {
+        code: 'E0004',
+        message: '操作成功'
+    };
     result.data = null;
     const header = ctx.request.header;
     const tokenStr = header.authorization;
     if (tokenStr) {
       const token = tokenStr.replace('Bearer ', '');
       try {
-        const decoded = jwt.verify(token, privateKey);
+        jwt.verify(token, privateKey);
       } catch(err) {
         // err
         if (err.name === 'TokenExpiredError') {
@@ -29,7 +32,6 @@ module.exports = options => {
       await next();
     } else {
       result.message = '请登陆';
-      result.code = 'E0004';
       ctx.body = result;
     }
 
