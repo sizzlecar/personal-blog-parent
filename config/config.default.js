@@ -17,14 +17,13 @@ module.exports = appInfo => {
 
   // add your middleware config here
   config.middleware = [];
-
   config.sequelize = {
     dialect: 'mysql', // support: mysql, mariadb, postgres, mssql
     database: 'personal_blog',
     host: '127.0.0.1',
     port: 3306,
-    username: 'root',
-    password: '12345678',
+    username: process.env.user || 'root',
+    password: process.env.password || '',
     // custom protocol; default: 'tcp'
     // postgres only, useful for Heroku
     protocol: null,
