@@ -13,6 +13,7 @@
     "highlight.js": "^9.15.10",
     "jsonwebtoken": "^8.5.1",
     "marked": "^0.7.0",
+    "moment": "^2.24.0",
     "mysql2": "^1.6.5"
   },
   "devDependencies": {
